@@ -5,12 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -20,10 +19,10 @@ import edu.wpi.first.wpilibj.motorcontrol.Spark;
  */
 public class Robot extends TimedRobot {
   private final PWMSparkMax m_leftDrive = new PWMSparkMax(6);
-  private final Spark m_rightDrive = new Spark(4);
+  private final PWMSparkMax m_rightDrive = new PWMSparkMax(1);
   private final DifferentialDrive m_robotDrive =
       new DifferentialDrive(m_leftDrive::set, m_rightDrive::set);
-  private final XboxController m_controller = new XboxController(0);
+  private final PS4Controller m_controller = new PS4Controller(0);
   private final Timer m_timer = new Timer();
 
   public Robot() {
@@ -65,10 +64,68 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {}
 
+
+
+  public void ejectAmp() {
+    m_leftDrive.set(0.5);
+    m_rightDrive.set(-0.5);
+  }
+
+  public void stopEjectAmp() {
+    m_leftDrive.set(0);
+    m_rightDrive.set(0);
+  }
+
+
+  public void ejectSpeaker() {
+    m_leftDrive.set(1);
+    m_rightDrive.set(-1);
+  }
+
+  public void stopEjectSpeaker() {
+    m_leftDrive.set(0);
+    m_rightDrive.set(0);
+  }
+
+
+  public void intake(){
+    m_leftDrive.set(-0.25);
+    m_rightDrive.set(0.25);
+  }
+
+  public void stopIntake(){
+    m_leftDrive.set(0);
+    m_rightDrive.set(0);
+  }
+
+
+
+
   /** This function is called periodically during teleoperated mode. */
   @Override
   public void teleopPeriodic() {
-    m_robotDrive.arcadeDrive(-m_controller.getLeftY(), -m_controller.getRightX());
+    
+    
+    if(m_controller.getSquareButtonPressed());
+      ejectAmp();
+    if(m_controller.getSquareButtonReleased());
+      stopEjectAmp();
+
+    
+    if(m_controller.getTriangleButtonPressed());
+      intake();
+    if(m_controller.getTriangleButtonReleased());
+      stopIntake();
+
+
+    if(m_controller.getCircleButtonPressed());
+      ejectSpeaker();
+    if(m_controller.getCircleButtonReleased());
+      stopEjectSpeaker();
+    //m_robotDrive.arcadeDrive(-m_controller.getLeftY(), -m_controller.getRightX());
+
+
+
   }
 
   /** This function is called once each time the robot enters test mode. */
