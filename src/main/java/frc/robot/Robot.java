@@ -5,11 +5,13 @@
 package frc.robot;
 
 import edu.wpi.first.util.sendable.SendableRegistry;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -18,11 +20,26 @@ import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
  * directory.
  */
 public class Robot extends TimedRobot {
-  private final PWMSparkMax m_leftDrive = new PWMSparkMax(6);
-  private final PWMSparkMax m_rightDrive = new PWMSparkMax(1);
+
+  private final PWMSparkMax m_leftDrive = new PWMSparkMax(1);
+  private final PWMSparkMax m_rightDrive = new PWMSparkMax(2);
+  
+  private final Spark m_intake = new Spark(3);
+  private final Spark m_belt = new Spark(4);
+
+  private final Spark m_leftLaunch = new Spark(5);
+  private final Spark m_rightLaunch = new Spark(6);
+
+
   private final DifferentialDrive m_robotDrive =
       new DifferentialDrive(m_leftDrive::set, m_rightDrive::set);
+
+  private final DigitalInput topLimitSwitch = new DigitalInput(0);
+  private final DigitalInput bottomLimitSwitch = new DigitalInput(0);
+
+
   private final PS4Controller m_controller = new PS4Controller(0);
+
   private final Timer m_timer = new Timer();
 
   public Robot() {
@@ -64,7 +81,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {}
 
+  public void lift() {
 
+  }
 
   public void ejectAmp() {
     m_leftDrive.set(0.5);
