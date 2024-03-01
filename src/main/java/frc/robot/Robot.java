@@ -25,6 +25,7 @@ public class Robot extends TimedRobot {
   private final PWMSparkMax m_rightDrive = new PWMSparkMax(2);
   
   private final Spark m_intake = new Spark(3);
+
   private final Spark m_belt = new Spark(4);
 
   private final Spark m_leftLaunch = new Spark(5);
@@ -34,8 +35,13 @@ public class Robot extends TimedRobot {
   private final DifferentialDrive m_robotDrive =
       new DifferentialDrive(m_leftDrive::set, m_rightDrive::set);
 
-  private final DigitalInput topLimitSwitch = new DigitalInput(0);
-  private final DigitalInput bottomLimitSwitch = new DigitalInput(0);
+  private final DigitalInput topLeftLimitSwitch = new DigitalInput(1);
+  private final DigitalInput bottomLeftLimitSwitch = new DigitalInput(2);
+  private final DigitalInput topRightLimitSwitch = new DigitalInput(3);
+  private final DigitalInput bottomRightLimitSwitch = new DigitalInput(4);
+  private final Spark m_leftLift = new Spark(7);
+  private final Spark m_rightLift = new Spark(8);
+
 
 
   private final PS4Controller m_controller = new PS4Controller(0);
@@ -81,40 +87,86 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {}
 
-  public void lift() {
 
+  public void moveBelt() {
+    m_belt.set(1);
   }
 
+  public void stopBelt() {
+    m_belt.set(0);
+  }
+
+//Edit the values in the parenthesis to slow it down or speed it up. A negative number will invert the motor. 
+//Have seperate so that they can be controlled seperatley. 
+  public void leftLift() {
+    m_leftLift.set(-.125);
+    if(bottomLeftLimitSwitch.get()){
+      m_leftLift.set(0);
+    }
+  }
+  public void rightLift() {
+    m_rightLift.set(.125);
+    if(bottomRightLimitSwitch.get()){
+      m_rightLift.set(0);
+    }
+  }
+  public void stopLeftLift() {
+  m_leftLift.set(0);
+}
+  public void stopRightLift(){
+  m_rightLift.set(0);
+}
+
+//Make sure to check these values and edit accordingly. 
+
+
+//These will be automated to drop the robot off the chain. (Please check to see if we can do this)
+  public void dropRobot(){
+  m_leftLift.set(-.125);
+  if(topLeftLimitSwitch.get()){
+    m_leftLift.set(0);
+  }
+  m_rightLift.set(0.125);
+  if(topRightLimitSwitch.get()){
+    m_rightLift.set(0);
+  }
+}
+
+
+
+
+
+  
+//These values were random. Change accordingly.
   public void ejectAmp() {
-    m_leftDrive.set(0.5);
-    m_rightDrive.set(-0.5);
+    m_leftLaunch.set(0.5);
+    m_rightLaunch.set(-0.5);
+    moveBelt();
   }
-
   public void stopEjectAmp() {
-    m_leftDrive.set(0);
-    m_rightDrive.set(0);
+    stopBelt();
+    m_leftLaunch.set(0);
+    m_rightLaunch.set(0);
   }
 
-
+//Runs the eject motors first before the belt. Should allow for the wheels to get up to speed. 
   public void ejectSpeaker() {
-    m_leftDrive.set(1);
-    m_rightDrive.set(-1);
+    m_leftLaunch.set(1);
+    m_rightLaunch.set(-1);
+    moveBelt();
   }
-
   public void stopEjectSpeaker() {
-    m_leftDrive.set(0);
-    m_rightDrive.set(0);
+    stopBelt();
+    m_leftLaunch.set(0);
+    m_rightLaunch.set(0);
   }
 
-
+//Intake roller motors. 
   public void intake(){
-    m_leftDrive.set(-0.25);
-    m_rightDrive.set(0.25);
+    m_intake.set(-0.25);
   }
-
   public void stopIntake(){
-    m_leftDrive.set(0);
-    m_rightDrive.set(0);
+    m_intake.set(0);
   }
 
 
@@ -124,24 +176,41 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     
-    
-    if(m_controller.getSquareButtonPressed());
+
+    //Shoot to amp with Square
+    if(m_controller.getSquareButtonPressed())
       ejectAmp();
-    if(m_controller.getSquareButtonReleased());
+    if(m_controller.getSquareButtonReleased())
       stopEjectAmp();
 
-    
-    if(m_controller.getTriangleButtonPressed());
+    //Intake with triangle
+    if(m_controller.getTriangleButtonPressed())
       intake();
-    if(m_controller.getTriangleButtonReleased());
+    if(m_controller.getTriangleButtonReleased())
       stopIntake();
 
-
-    if(m_controller.getCircleButtonPressed());
+    //Shoot to speaker with circle
+    if(m_controller.getCircleButtonPressed())
       ejectSpeaker();
-    if(m_controller.getCircleButtonReleased());
+    if(m_controller.getCircleButtonReleased())
       stopEjectSpeaker();
-    //m_robotDrive.arcadeDrive(-m_controller.getLeftY(), -m_controller.getRightX());
+    
+    //Lift Robot with triggers(L1 and R1). Hold to go up for each. 
+    if(m_controller.getL1ButtonPressed()){
+      leftLift();
+    }
+    if(m_controller.getL1ButtonReleased()){
+      stopLeftLift();
+    }
+    if(m_controller.getR1ButtonPressed()){
+      rightLift();
+    }
+    if(m_controller.getR1ButtonReleased()){
+      stopRightLift();
+    }
+
+    //Drive with left joystick
+    m_robotDrive.arcadeDrive(-m_controller.getLeftY(), -m_controller.getRightX());
 
 
 
