@@ -12,6 +12,9 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+//
+import edu.wpi.first.wpikibj.motorcontrol.PWMVictorSPX;
+//If you see an error here, try to find out what the motor controller is named. I think it is PWMVictorSPX. If you cant find anything, comment them out with "//"
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -39,9 +42,9 @@ public class Robot extends TimedRobot {
   private final DigitalInput bottomLeftLimitSwitch = new DigitalInput(2);
   private final DigitalInput topRightLimitSwitch = new DigitalInput(3);
   private final DigitalInput bottomRightLimitSwitch = new DigitalInput(4);
-  private final Spark m_leftLift = new Spark(7);
-  private final Spark m_rightLift = new Spark(8);
-
+  private final PWMVictorSPX m_leftLift = new PWMVictorSPX(7);
+  private final PWMVictorSPX m_rightLift = new PWMVictorSPX(8);
+  //If you see an error here, try to find out what the motor controller is named. I think it is PWMVictorSPX. If you cant find anything, comment them out with "//"
 
 
   private final PS4Controller m_controller = new PS4Controller(0);
